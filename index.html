@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barycentre - Trouvez le bar optimal</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/leaflet.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <div id="map"></div>
+    
+    <header>
+      <div class="lang-selector">
+        <button class="lang-btn active" data-lang="fr">FR</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button id="infoBtn" class="lang-btn" title="Information">i</button>
+      </div>
+      <div class="header-content">
+        <div class="header-title">
+          <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+            <rect width="100" height="100" fill="none"/>
+            <rect x="2" y="2" width="96" height="96" fill="none" stroke="currentColor" stroke-width="4"/>
+            <circle cx="50" cy="50" r="8" fill="currentColor"/>
+            <line x1="50" y1="50" x2="25" y2="25" stroke="currentColor" stroke-width="3"/>
+            <line x1="50" y1="50" x2="75" y2="25" stroke="currentColor" stroke-width="3"/>
+            <line x1="50" y1="50" x2="25" y2="75" stroke="currentColor" stroke-width="3"/>
+            <line x1="50" y1="50" x2="75" y2="75" stroke="currentColor" stroke-width="3"/>
+            <rect x="20" y="20" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect x="70" y="20" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect x="20" y="70" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect x="70" y="70" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <h1>BARYCENTRE</h1>
+        </div>
+        <p data-i18n="subtitle">Le bar parfait pour tout le monde</p>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <button id="togglePanel" class="panel-toggle-btn" title="Masquer/Afficher">◀</button>
+      <section class="card workflow-card">
+        <div class="workflow-nav">
+          <button class="step-btn active" data-step="1" data-label-fr="PARTICIPANTS" data-label-en="PARTICIPANTS">① PARTICIPANTS</button>
+          <button class="step-btn" data-step="2" data-label-fr="CRITÈRES" data-label-en="CRITERIA">②</button>
+          <button class="step-btn" data-step="3" disabled data-label-fr="RÉSULTATS" data-label-en="RESULTS">③</button>
+        </div>
+
+        <div id="step1" class="workflow-step active">
+          <h2>■ <span data-i18n="step1.title">PARTICIPANTS</span></h2>
+          <form id="personForm" class="person-form">
+            <input 
+              type="text" 
+              id="personName" 
+              data-i18n-placeholder="step1.namePlaceholder"
+              placeholder="Nom" 
+              required
+            >
+            <input 
+              type="text" 
+              id="personAddress" 
+              data-i18n-placeholder="step1.addressPlaceholder"
+              placeholder="Adresse" 
+              required
+            >
+            <button type="submit" class="btn" data-i18n="step1.addBtn">+ AJOUTER</button>
+          </form>
+          
+          <div id="participantsList" class="participants-list"></div>
+          
+          <button id="nextToCriteria" class="btn btn-primary" disabled style="margin-top: 1rem;" data-i18n="step1.nextBtn">
+            SUIVANT →
+          </button>
+        </div>
+
+        <div id="step2" class="workflow-step">
+          <h2>■ <span data-i18n="step2.title">CRITÈRES DE RECHERCHE</span></h2>
+          
+          <div class="search-options" id="searchOptions">
+            <div class="option-group">
+              <label data-i18n="step2.transportLabel">MODE DE TRANSPORT</label>
+              <div class="transport-modes">
+                <button class="mode-btn active" data-mode="driving" data-i18n="step2.driving">■ VOITURE</button>
+                <button class="mode-btn" data-mode="cycling" data-i18n="step2.cycling">■ VÉLO</button>
+                <button class="mode-btn" data-mode="walking" data-i18n="step2.walking">■ MARCHE</button>
+              </div>
+            </div>
+            
+            <div class="option-group">
+              <label data-i18n="step2.establishmentLabel">TYPE D'ÉTABLISSEMENT</label>
+              <div class="establishment-types">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="filterBar" checked>
+                  <span data-i18n="step2.bars">Bars</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="filterPub" checked>
+                  <span data-i18n="step2.pubs">Pubs</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="filterWineBar">
+                  <span data-i18n="step2.wineBars">Bars à vin</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="filterBiergarten">
+                  <span data-i18n="step2.biergartens">Biergartens</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <button id="searchBars" class="btn btn-primary" data-i18n="step2.searchBtn">
+            RECHERCHER
+          </button>
+        </div>
+
+        <div id="step3" class="workflow-step">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="margin: 0;">■ <span data-i18n="step3.title">RÉSULTATS</span></h2>
+            <button id="shareBtn" class="btn" style="padding: 0.5rem 1rem;" data-i18n="step3.shareBtn">↗ PARTAGER</button>
+          </div>
+          <div id="results" class="results-list"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="infoModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <button class="modal-close">×</button>
+      <h2><span data-i18n="info.title">À propos</span></h2>
+      <div class="info-section">
+        <h3>GitHub</h3>
+        <a href="https://github.com/ale-vnn/barycentre" target="_blank" rel="noopener noreferrer" class="info-link">
+          github.com/ale-vnn/barycentre
+        </a>
+      </div>
+      <div class="info-section">
+        <h3 data-i18n="info.services">Services utilisés</h3>
+        <ul class="info-list">
+          <li><strong>Nominatim</strong> (OpenStreetMap) - <span data-i18n="info.geocoding">Géocodage d'adresses</span></li>
+          <li><strong>Overpass API</strong> (OpenStreetMap) - <span data-i18n="info.search">Recherche de lieux</span></li>
+          <li><strong>OSRM</strong> - <span data-i18n="info.routing">Calcul d'itinéraires</span></li>
+          <li><strong>CartoDB</strong> - <span data-i18n="info.tiles">Tuiles cartographiques</span></li>
+          <li><strong>Leaflet</strong> - <span data-i18n="info.library">Bibliothèque cartographique</span></li>
+        </ul>
+      </div>
+      <div class="info-section">
+        <p data-i18n="info.license">Licence MIT - Code source ouvert</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
