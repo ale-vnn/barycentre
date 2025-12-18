@@ -26,7 +26,6 @@ const translations = {
       bars: 'Bars',
       pubs: 'Pubs',
       wineBars: 'Bars à vin',
-      biergartens: 'Biergartens',
       searchBtn: 'RECHERCHER',
       searchRequired: 'X LANCEZ D\'ABORD LA RECHERCHE'
     },
@@ -89,7 +88,6 @@ const translations = {
       bars: 'Bars',
       pubs: 'Pubs',
       wineBars: 'Wine bars',
-      biergartens: 'Biergartens',
       searchBtn: 'SEARCH',
       searchRequired: 'X RUN THE SEARCH FIRST'
     },
@@ -196,7 +194,7 @@ const state = {
 };
 
 function initMap() {
-  state.map = L.map('map').setView([48.8566, 2.3522], 12);
+  state.map = L.map('map').setView([48.1173, -1.6778], 12);
   
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -479,7 +477,6 @@ function updateEstablishmentTypes() {
   if (document.getElementById('filterBar').checked) state.establishmentTypes.push('bar');
   if (document.getElementById('filterPub').checked) state.establishmentTypes.push('pub');
   if (document.getElementById('filterWineBar').checked) state.establishmentTypes.push('wine_bar');
-  if (document.getElementById('filterBiergarten').checked) state.establishmentTypes.push('biergarten');
   
   if (state.establishmentTypes.length === 0) {
     state.establishmentTypes = ['bar'];
@@ -980,7 +977,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
-  ['filterBar', 'filterPub', 'filterWineBar', 'filterBiergarten'].forEach(id => {
+  ['filterBar', 'filterPub', 'filterWineBar'].forEach(id => {
     document.getElementById(id).addEventListener('change', () => {
       updateEstablishmentTypes();
       clearResults();
