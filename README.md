@@ -11,12 +11,6 @@ Find the optimal bar that minimizes travel time for your group.
 - Share sessions via URL
 - Bilingual interface (FR/EN)
 
-## Deployment
-
-The application is automatically deployed to GitHub Pages on every push to the `main` branch.
-
-**URL**: `https://ale-vnn.github.io/barycentre/`
-
 ## Local Development
 
 ```bash
