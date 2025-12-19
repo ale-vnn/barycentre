@@ -1,15 +1,17 @@
 # Barycentre
 
-Find the optimal bar that minimizes travel time for your group.
+Find the optimal meeting place that balances travel time for your entire group using the BaryScore algorithm.
 
-## Features
+## BaryScore System
 
-- Add multiple participants with automatic geocoding
-- Calculate personalized routes (car/bike/walk)
-- Search for optimal bars by average distance
-- Interactive map visualization
-- Share sessions via URL
-- Bilingual interface (FR/EN)
+The BaryScore algorithm ranks locations based on:
+- **70% Proximity**: Exponential penalty for longer average travel times
+- **30% Fairness**: Coefficient of variation to minimize disparities between participants
+
+Each result shows:
+- Overall BaryScore (0-100)
+- Individual travel times per participant
+- Advantage/penalty notes (e.g., -5min = advantaged, +3min = penalized)
 
 ## Local Development
 
@@ -17,21 +19,30 @@ Find the optimal bar that minimizes travel time for your group.
 # Installation
 npm install
 
-# Run dev server
+# Run dev server (http://localhost:5173)
 npm run dev
 
-# Build
+# Build for production
 npm run build
+
+# Preview production build
+npm run preview
 ```
+
+## Technical Stack
+
+- **Vite**: Fast build tool and dev server
+- **Leaflet**: Interactive maps
+- **Vanilla JS**: No heavy frameworks, lightweight and fast
+- **Grid Routing**: Custom routing system with pre-computed speed data
+
+## Data Sources
+
+### Other Services
+- **Nominatim**: Address geocoding (OpenStreetMap)
+- **CartoDB**: Map tiles
+- **Google Maps / OSRM**: External route viewing links
 
 ## License
 
 MIT License - see [LICENSE](LICENSE)
-
-## APIs & Services Used
-
-- **Nominatim** (OpenStreetMap): Address geocoding
-- **Overpass API** (OpenStreetMap): Bar/pub search
-- **OSRM** (Open Source Routing Machine): Route calculation
-- **CartoDB**: Base map tiles
-- **Leaflet**: JavaScript mapping library

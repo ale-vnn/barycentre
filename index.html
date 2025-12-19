@@ -16,6 +16,7 @@
       <div class="lang-selector">
         <button class="lang-btn active" data-lang="fr">FR</button>
         <button class="lang-btn" data-lang="en">EN</button>
+        <button id="themeBtn" class="lang-btn" title="Dark mode">☾</button>
         <button id="infoBtn" class="lang-btn" title="Information">i</button>
       </div>
       <div class="header-content">
@@ -35,12 +36,12 @@
           </svg>
           <h1>BARYCENTRE</h1>
         </div>
-        <p data-i18n="subtitle">Le bar parfait pour tout le monde</p>
+        <p data-i18n="subtitle"></p>
       </div>
     </header>
 
     <div class="main-content">
-      <button id="togglePanel" class="panel-toggle-btn" title="Masquer/Afficher">◀</button>
+      <button id="togglePanel" class="panel-toggle-btn" title="Hide/Show">◀</button>
       <section class="card workflow-card">
         <div class="workflow-nav">
           <button class="step-btn active" data-step="1" data-label-fr="PARTICIPANTS" data-label-en="PARTICIPANTS">① PARTICIPANTS</button>
@@ -49,73 +50,56 @@
         </div>
 
         <div id="step1" class="workflow-step active">
-          <h2>■ <span data-i18n="step1.title">PARTICIPANTS</span></h2>
-          <form id="personForm" class="person-form">
+          <h2>■ <span data-i18n="step1.title"></span></h2>
+          <div id="participantsList" class="participants-list"></div>
+          
+          <form id="participantForm" style="margin-top: 1rem;">
             <input 
               type="text" 
               id="personName" 
               data-i18n-placeholder="step1.namePlaceholder"
-              placeholder="Nom" 
               required
             >
             <input 
               type="text" 
               id="personAddress" 
               data-i18n-placeholder="step1.addressPlaceholder"
-              placeholder="Adresse" 
               required
             >
-            <button type="submit" class="btn" data-i18n="step1.addBtn">+ AJOUTER</button>
+            <select id="transportMode">
+              <option value="driving" data-i18n="step1.modeCar">Car</option>
+              <option value="cycling" data-i18n="step1.modeBike">Bike</option>
+              <option value="walking" data-i18n="step1.modeWalking">Walking</option>
+            </select>
+            <button type="submit" class="btn" data-i18n="step1.addBtn"></button>
           </form>
           
-          <div id="participantsList" class="participants-list"></div>
-          
           <button id="nextToCriteria" class="btn btn-primary" disabled style="margin-top: 1rem;" data-i18n="step1.nextBtn">
-            SUIVANT →
           </button>
         </div>
 
         <div id="step2" class="workflow-step">
-          <h2>■ <span data-i18n="step2.title">CRITÈRES DE RECHERCHE</span></h2>
+          <h2>■ <span data-i18n="step2.title"></span></h2>
           
-          <div class="search-options" id="searchOptions">
-            <div class="option-group">
-              <label data-i18n="step2.transportLabel">MODE DE TRANSPORT</label>
-              <div class="transport-modes">
-                <button class="mode-btn active" data-mode="driving" data-i18n="step2.driving">■ VOITURE</button>
-                <button class="mode-btn" data-mode="cycling" data-i18n="step2.cycling">■ VÉLO</button>
-                <button class="mode-btn" data-mode="walking" data-i18n="step2.walking">■ MARCHE</button>
-              </div>
+          <div class="form-group">
+            <label data-i18n="step2.priorityLabel"></label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="sortMode" value="baryscore" checked>
+                <span data-i18n="step2.priorityBaryScore"></span>
+              </label>
             </div>
-            
-            <div class="option-group">
-              <label data-i18n="step2.establishmentLabel">TYPE D'ÉTABLISSEMENT</label>
-              <div class="establishment-types">
-                <label class="checkbox-label">
-                  <input type="checkbox" id="filterBar" checked>
-                  <span data-i18n="step2.bars">Bars</span>
-                </label>
-                <label class="checkbox-label">
-                  <input type="checkbox" id="filterPub" checked>
-                  <span data-i18n="step2.pubs">Pubs</span>
-                </label>
-                <label class="checkbox-label">
-                  <input type="checkbox" id="filterWineBar">
-                  <span data-i18n="step2.wineBars">Bars à vin</span>
-                </label>
-              </div>
-            </div>
+            <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 0.5rem;" data-i18n="step2.moreOptions"></p>
           </div>
           
           <button id="searchBars" class="btn btn-primary" data-i18n="step2.searchBtn">
-            RECHERCHER
           </button>
         </div>
 
         <div id="step3" class="workflow-step">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h2 style="margin: 0;">■ <span data-i18n="step3.title">RÉSULTATS</span></h2>
-            <button id="shareBtn" class="btn" style="padding: 0.5rem 1rem;" data-i18n="step3.shareBtn">↗ PARTAGER</button>
+            <h2 style="margin: 0;">■ <span data-i18n="step3.title"></span></h2>
+            <button id="shareBtn" class="btn" style="padding: 0.5rem 1rem;" data-i18n="step3.shareBtn"></button>
           </div>
           <div id="results" class="results-list"></div>
         </div>
@@ -126,7 +110,7 @@
   <div id="infoModal" class="modal" style="display: none;">
     <div class="modal-content">
       <button class="modal-close">×</button>
-      <h2><span data-i18n="info.title">À propos</span></h2>
+      <h2><span data-i18n="info.title"></span></h2>
       <div class="info-section">
         <h3>GitHub</h3>
         <a href="https://github.com/ale-vnn/barycentre" target="_blank" rel="noopener noreferrer" class="info-link">
@@ -134,17 +118,21 @@
         </a>
       </div>
       <div class="info-section">
-        <h3 data-i18n="info.services">Services utilisés</h3>
+        <h3 data-i18n="info.baryScore"></h3>
+        <p data-i18n="info.baryScoreDesc"></p>
+      </div>
+      <div class="info-section">
+        <h3 data-i18n="info.services"></h3>
         <ul class="info-list">
-          <li><strong>Nominatim</strong> (OpenStreetMap) - <span data-i18n="info.geocoding">Géocodage d'adresses</span></li>
-          <li><strong>Overpass API</strong> (OpenStreetMap) - <span data-i18n="info.search">Recherche de lieux</span></li>
-          <li><strong>OSRM</strong> - <span data-i18n="info.routing">Calcul d'itinéraires</span></li>
-          <li><strong>CartoDB</strong> - <span data-i18n="info.tiles">Tuiles cartographiques</span></li>
-          <li><strong>Leaflet</strong> - <span data-i18n="info.library">Bibliothèque cartographique</span></li>
+          <li><strong>Static OSM Data</strong> (France) - <span data-i18n="info.staticDataDesc"></span></li>
+          <li><strong>Nominatim</strong> (OpenStreetMap) - <span data-i18n="info.geocoding"></span></li>
+          <li><strong>Overpass API</strong> (Worldwide fallback) - <span data-i18n="info.search"></span></li>
+          <li><strong>CartoDB</strong> - <span data-i18n="info.tiles"></span></li>
+          <li><strong>Leaflet</strong> - <span data-i18n="info.library"></span></li>
         </ul>
       </div>
       <div class="info-section">
-        <p data-i18n="info.license">Licence MIT - Code source ouvert</p>
+        <p data-i18n="info.license"></p>
       </div>
     </div>
   </div>
