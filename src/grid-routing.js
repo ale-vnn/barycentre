@@ -1,3 +1,5 @@
+import pako from 'pako';
+
 const GRID_SIZE = 0.02; 
 const FRANCE_BOUNDS = {
   minLon: -5.5,
@@ -23,7 +25,19 @@ export async function loadRoutingGrid(mode = 'car') {
       const basePath = import.meta.env.BASE_URL || '/';
       const response = await fetch(`${basePath}routing-grid-${mode}.json.gz`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json();
+      
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('application/json')) {
+        const data = await response.json();
+        routingGrids[mode] = data;
+        return data;
+      }
+      
+      const arrayBuffer = await response.arrayBuffer();
+      const decompressed = pako.inflate(new Uint8Array(arrayBuffer), { to: 'string' });
+      const data = JSON.parse(decompressed);
+      
       routingGrids[mode] = data;
       return data;
     } catch (error) {
