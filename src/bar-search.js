@@ -1,3 +1,4 @@
+import pako from 'pako';
 import { calculateDistance } from './utils.js';
 
 function isInFrance(lat, lng) {
@@ -22,7 +23,16 @@ async function loadStaticBarsData(translations) {
     const response = await fetch(`${basePath}bars-france.geojson.gz`);
     if (!response.ok) throw new Error('Static data not available');
     
-    const geojson = await response.json();
+    const contentType = response.headers.get('content-type');
+    let geojson;
+    
+    if (contentType && contentType.includes('application/json')) {
+      geojson = await response.json();
+    } else {
+      const arrayBuffer = await response.arrayBuffer();
+      const decompressed = pako.inflate(new Uint8Array(arrayBuffer), { to: 'string' });
+      geojson = JSON.parse(decompressed);
+    }
     staticBarsData = geojson.features.map(feature => ({
       id: feature.properties.id || feature.properties.osmId,
       osmId: feature.properties.osmId,
