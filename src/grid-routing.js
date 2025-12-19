@@ -20,7 +20,8 @@ export async function loadRoutingGrid(mode = 'car') {
   
   loadingPromises[mode] = (async () => {
     try {
-      const response = await fetch(`/routing-grid-${mode}.json.gz`);
+      const basePath = import.meta.env.BASE_URL || '/';
+      const response = await fetch(`${basePath}routing-grid-${mode}.json.gz`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       routingGrids[mode] = data;
