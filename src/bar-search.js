@@ -18,7 +18,8 @@ async function loadStaticBarsData(translations) {
   if (staticBarsLoaded) return staticBarsData;
   
   try {
-    const response = await fetch('/bars-france.geojson.gz');
+    const basePath = import.meta.env.BASE_URL || '/';
+    const response = await fetch(`${basePath}bars-france.geojson.gz`);
     if (!response.ok) throw new Error('Static data not available');
     
     const geojson = await response.json();
