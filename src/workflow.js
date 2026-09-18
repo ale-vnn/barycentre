@@ -45,7 +45,6 @@ export function updateWorkflowButtons() {
   const nextBtn = document.getElementById('nextToCriteria');
   const step2Btn = document.querySelector('.step-btn[data-step="2"]');
   const step3Btn = document.querySelector('.step-btn[data-step="3"]');
-  const searchOptions = document.getElementById('searchOptions');
   const searchBtn = document.getElementById('searchBars');
   
   const hasEnoughParticipants = state.participants.length >= 2;
@@ -56,13 +55,6 @@ export function updateWorkflowButtons() {
     step2Btn.disabled = !hasEnoughParticipants;
   }
   
-  if (searchOptions) {
-    if (hasEnoughParticipants) {
-      searchOptions.classList.remove('disabled');
-    } else {
-      searchOptions.classList.add('disabled');
-    }
-  }
   if (searchBtn) {
     searchBtn.disabled = !hasEnoughParticipants;
   }

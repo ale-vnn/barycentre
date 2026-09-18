@@ -3,6 +3,7 @@ import L from 'leaflet';
 import { state } from './state.js';
 import { t, getCurrentLang } from '../i18n.js';
 import { getOsmNodeUrl, getGoogleMapsSearchUrl } from './ext-links.js';
+import { escapeHtml, safeUrl } from './utils.js';
 
 export function clearResults() {
   state.bars = [];
@@ -37,9 +38,9 @@ export function displayResults(scoredBars) {
     <div class="result-item" data-bar-index="${index}" style="cursor: pointer;" onclick="window.openBarPopup(${index})">
       <div>
         <span class="result-rank">${index + 1}</span>
-        <span class="result-name">${bar.name}</span>
+        <span class="result-name">${escapeHtml(bar.name)}</span>
       </div>
-      <div class="result-address">${bar.address}</div>
+      <div class="result-address">${escapeHtml(bar.address)}</div>
       <div class="result-stats">
         <div class="stat">
           <span>BARYSCORE</span>
@@ -52,7 +53,7 @@ export function displayResults(scoredBars) {
           const duration = bar.durations[i];
           const sign = note > 0 ? '+' : '';
           return `<div class="ratio-item">
-            <span>${p.name}</span>
+            <span>${escapeHtml(p.name)}</span>
             <span>${sign}${note.toFixed(0)}min</span>
             <span>${duration.toFixed(0)}min</span>
           </div>`;
@@ -60,10 +61,10 @@ export function displayResults(scoredBars) {
       </div>
       <div style="display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.5rem; font-size: 0.85rem;">
         <button class="btn btn-secondary" onclick="event.stopPropagation(); window.showBarRoutes(${index});">${t('step3.viewRoutes')}</button>
-        ${bar.website ? `<a href="${bar.website}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" onclick="event.stopPropagation();" style="text-decoration: none;">${getCurrentLang() === 'fr' ? 'Site' : 'Web'}</a>` : ''}
-        ${bar.phone ? `<a href="tel:${bar.phone}" class="btn btn-secondary" onclick="event.stopPropagation();" style="text-decoration: none;">${bar.phone}</a>` : ''}
-        <a href="${getOsmNodeUrl(bar.osmId)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" onclick="event.stopPropagation();" style="text-decoration: none;">OSM</a>
-        <a href="${getGoogleMapsSearchUrl(bar.name, bar.address, t('step3.noAddress'))}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" onclick="event.stopPropagation();" style="text-decoration: none;">GMAPS</a>
+        ${safeUrl(bar.website) ? `<a href="${escapeHtml(safeUrl(bar.website))}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" onclick="event.stopPropagation();" style="text-decoration: none;">${getCurrentLang() === 'fr' ? 'Site' : 'Web'}</a>` : ''}
+        ${bar.phone ? `<a href="tel:${encodeURIComponent(bar.phone)}" class="btn btn-secondary" onclick="event.stopPropagation();" style="text-decoration: none;">${escapeHtml(bar.phone)}</a>` : ''}
+        <a href="${escapeHtml(getOsmNodeUrl(bar.osmId))}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" onclick="event.stopPropagation();" style="text-decoration: none;">OSM</a>
+        <a href="${escapeHtml(getGoogleMapsSearchUrl(bar.name, bar.address, t('step3.noAddress')))}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" onclick="event.stopPropagation();" style="text-decoration: none;">GMAPS</a>
       </div>
     </div>
   `).join('');
@@ -100,17 +101,17 @@ export function displayBarsOnMap(bars) {
     
     const popupContent = `
       <div style="font-family: 'Courier New', Courier, monospace;">
-        <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">${bar.name}</h3>
-        <div style="margin-bottom: 0.5rem; font-size: 0.9rem;">${bar.address}</div>
+        <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">${escapeHtml(bar.name)}</h3>
+        <div style="margin-bottom: 0.5rem; font-size: 0.9rem;">${escapeHtml(bar.address)}</div>
         <div style="margin-bottom: 0.5rem;">
           <strong>BaryScore: ${bar.score}/100</strong>
         </div>
         <div style="display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.5rem;">
           <button class="btn btn-secondary" onclick="window.showBarRoutes(${index}); return false;" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">${t('step3.viewRoutes')}</button>
-          ${bar.website ? `<a href="${bar.website}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; text-decoration: none;">${getCurrentLang() === 'fr' ? 'Site' : 'Web'}</a>` : ''}
-          ${bar.phone ? `<a href="tel:${bar.phone}" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; text-decoration: none;">${bar.phone}</a>` : ''}
-          <a href="${getOsmNodeUrl(bar.osmId)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; text-decoration: none;">OSM</a>
-          <a href="${getGoogleMapsSearchUrl(bar.name, bar.address, t('step3.noAddress'))}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; text-decoration: none;">GMAPS</a>
+          ${safeUrl(bar.website) ? `<a href="${escapeHtml(safeUrl(bar.website))}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; text-decoration: none;">${getCurrentLang() === 'fr' ? 'Site' : 'Web'}</a>` : ''}
+          ${bar.phone ? `<a href="tel:${encodeURIComponent(bar.phone)}" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; text-decoration: none;">${escapeHtml(bar.phone)}</a>` : ''}
+          <a href="${escapeHtml(getOsmNodeUrl(bar.osmId))}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; text-decoration: none;">OSM</a>
+          <a href="${escapeHtml(getGoogleMapsSearchUrl(bar.name, bar.address, t('step3.noAddress')))}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; text-decoration: none;">GMAPS</a>
         </div>
       </div>
     `;

@@ -42,11 +42,8 @@ export const translations = {
       sessionImported: '→ SESSION IMPORTÉE',
       searching: '■ RECHERCHE EN COURS...',
       calculating: '■ CALCUL DES ITINÉRAIRES...',
-      modeChanged: 'Mode: ',
-      fallbackWarning: 'Utilisation du routage estimé (OSRM indisponible)',
       retrying: 'Nouvelle tentative...',
-      apiError: 'Service temporairement indisponible',
-      fallbackMode: 'Basculement vers routage estimé'
+      apiError: 'Service temporairement indisponible'
     },
     info: {
       title: 'À propos',
@@ -103,11 +100,8 @@ export const translations = {
       sessionImported: '→ SESSION IMPORTED',
       searching: '■ SEARCHING...',
       calculating: '■ CALCULATING ROUTES...',
-      modeChanged: 'Mode: ',
-      fallbackWarning: 'Using estimated routing (OSRM unavailable)',
       retrying: 'Retrying...',
-      apiError: 'Service temporarily unavailable',
-      fallbackMode: 'Switching to estimated routing'
+      apiError: 'Service temporarily unavailable'
     },
     info: {
       title: 'About',

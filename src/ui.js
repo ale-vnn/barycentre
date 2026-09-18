@@ -16,8 +16,7 @@ export function showToast(message) {
 export function shareSession() {
   const params = new URLSearchParams();
   params.set('data', btoa(JSON.stringify({
-    participants: state.participants,
-    mode: state.transportMode
+    participants: state.participants
   })));
   
   const url = `${window.location.origin}${window.location.pathname}?${params}`;
