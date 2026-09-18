@@ -37,3 +37,27 @@ export function getTranslatedModeLabel(mode, lang) {
   };
   return labels[mode] || labels.driving;
 }
+
+const HTML_ESCAPES = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+};
+
+// Escape untrusted values (OSM data, shared session payloads) before innerHTML
+export function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => HTML_ESCAPES[char]);
+}
+
+// Keep only http(s) links: OSM website tags are user-contributed
+export function safeUrl(url) {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url, window.location.href);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? parsed.href : null;
+  } catch {
+    return null;
+  }
+}

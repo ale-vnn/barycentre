@@ -2,39 +2,41 @@
 
 import { calculateGridRoutes } from './grid-routing.js';
 
+const PROFILE_BY_MODE = {
+  driving: 'car',
+  cycling: 'bike',
+  walking: 'foot'
+};
+
+export function getProfile(transportMode) {
+  return PROFILE_BY_MODE[transportMode] || 'car';
+}
+
+// Distinct grid profiles needed by a group, so only those get downloaded
+export function getUsedProfiles(participants) {
+  return [...new Set(participants.map(p => getProfile(p.transportMode)))];
+}
+
 export async function calculateBarRoutes(bar, participants) {
-  const profileMap = {
-    'driving': 'car',
-    'cycling': 'bike',
-    'walking': 'foot'
-  };
-  
-  // Calculate route for each participant with their own transport mode
+  // Each participant travels with their own transport mode
   const routes = await Promise.all(
     participants.map(async (p) => {
-      const profile = profileMap[p.transportMode] || 'car';
-      const gridRoutes = await calculateGridRoutes(
+      const [route] = await calculateGridRoutes(
         { lon: bar.lng, lat: bar.lat },
         [{ lon: p.lng, lat: p.lat }],
-        profile
+        getProfile(p.transportMode)
       );
-      return gridRoutes[0];
+      return {
+        distance: route.distance,
+        duration: route.duration,
+        avgSpeed: route.avgSpeed
+      };
     })
   );
-  
-  const formattedRoutes = routes.map(route => ({
-    distance: route.distance,
-    duration: route.duration,
-    geometry: null,
-    avgSpeed: route.avgSpeed
-  }));
-  
-  const distances = formattedRoutes.map(r => r.distance);
-  const durations = formattedRoutes.map(r => r.duration);
-  
+
   return {
-    distances,
-    durations,
-    routes: formattedRoutes
+    distances: routes.map(r => r.distance),
+    durations: routes.map(r => r.duration),
+    routes
   };
 }

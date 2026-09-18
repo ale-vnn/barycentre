@@ -1,7 +1,11 @@
 // Scoring and calculation utilities
 
-import { calculateBarRoutes } from './routing.js';
+import { calculateBarRoutes, getUsedProfiles } from './routing.js';
 import { loadRoutingGrid } from './grid-routing.js';
+
+// BaryScore weights: getting there fast matters most, but not at any cost in fairness
+const PROXIMITY_WEIGHT = 0.85;
+const FAIRNESS_WEIGHT = 0.15;
 
 export function calculateCenter(participants) {
   const totalLat = participants.reduce((sum, p) => sum + p.lat, 0);
@@ -12,51 +16,41 @@ export function calculateCenter(participants) {
   };
 }
 
-export async function calculateBarScores(bars, participants, transportMode) {
-  // Preload all routing grids
-  await Promise.all([
-    loadRoutingGrid('car'),
-    loadRoutingGrid('bike'),
-    loadRoutingGrid('foot')
-  ]);
-  
+export async function calculateBarScores(bars, participants) {
+  await Promise.all(getUsedProfiles(participants).map(profile => loadRoutingGrid(profile)));
+
   const scoredBars = await Promise.all(
     bars.map(async bar => {
-      const routeData = await calculateBarRoutes(bar, participants, transportMode);
+      const routeData = await calculateBarRoutes(bar, participants);
       const durations = routeData.durations;
-      
-      // Calculate average duration
+
       const avgDuration = durations.reduce((sum, d) => sum + d, 0) / durations.length;
       const maxDuration = Math.max(...durations);
-      
-      // Proximity score: linear decay based on average duration
+
+      // Proximity: linear decay, 0 at 66 min average
       const proximityScore = Math.max(0, 100 - (avgDuration * 1.5));
-      
-      // Fairness score: based on coefficient of variation
+
+      // Fairness: coefficient of variation. Everyone already there means perfect fairness.
       const variance = durations.reduce((sum, d) => sum + Math.pow(d - avgDuration, 2), 0) / durations.length;
-      const coefficientOfVariation = Math.sqrt(variance) / avgDuration;
+      const coefficientOfVariation = avgDuration > 0 ? Math.sqrt(variance) / avgDuration : 0;
       const fairnessScore = Math.max(0, 100 * (1 - coefficientOfVariation));
-      
-      // Final score: 85% proximity, 15% fairness
-      const score = Math.max(1, Math.min(100, 
-        proximityScore * 0.85 + fairnessScore * 0.15
+
+      const score = Math.max(1, Math.min(100,
+        proximityScore * PROXIMITY_WEIGHT + fairnessScore * FAIRNESS_WEIGHT
       ));
-      
-      // Calculate individual participant notes (deviation from average)
-      const participantNotes = durations.map(d => d - avgDuration);
-      
+
       return {
         ...bar,
         score: score.toFixed(1),
         avgDuration: avgDuration.toFixed(1),
         maxDuration: maxDuration.toFixed(1),
         durations,
-        participantNotes,
+        // Deviation from the group average, per participant
+        participantNotes: durations.map(d => d - avgDuration),
         routes: routeData.routes
       };
     })
   );
-  
-  // Sort by score (descending)
+
   return scoredBars.sort((a, b) => parseFloat(b.score) - parseFloat(a.score));
 }

@@ -1,15 +1,13 @@
-import pako from 'pako';
 import { calculateDistance } from './utils.js';
+import { fetchJsonGz } from './gz-json.js';
+
+// Bounding box of the Geofabrik "france" extract the static dataset is built from.
+// Same values as the routing grids' metadata.bounds: one France, one box.
+const FRANCE_BOUNDS = { minLat: 41.0, maxLat: 51.5, minLon: -5.5, maxLon: 9.5 };
 
 function isInFrance(lat, lng) {
-  const bounds = {
-    north: 51.2,
-    south: 41.3,
-    west: -5.3,
-    east: 9.7
-  };
-  return lat >= bounds.south && lat <= bounds.north && 
-         lng >= bounds.west && lng <= bounds.east;
+  return lat >= FRANCE_BOUNDS.minLat && lat <= FRANCE_BOUNDS.maxLat &&
+         lng >= FRANCE_BOUNDS.minLon && lng <= FRANCE_BOUNDS.maxLon;
 }
 
 let staticBarsData = null;
@@ -20,19 +18,7 @@ async function loadStaticBarsData(translations) {
   
   try {
     const basePath = import.meta.env.BASE_URL || '/';
-    const response = await fetch(`${basePath}bars-france.geojson.gz`);
-    if (!response.ok) throw new Error('Static data not available');
-    
-    const contentType = response.headers.get('content-type');
-    let geojson;
-    
-    if (contentType && contentType.includes('application/json')) {
-      geojson = await response.json();
-    } else {
-      const arrayBuffer = await response.arrayBuffer();
-      const decompressed = pako.inflate(new Uint8Array(arrayBuffer), { to: 'string' });
-      geojson = JSON.parse(decompressed);
-    }
+    const geojson = await fetchJsonGz(`${basePath}bars-france.geojson.gz`);
     staticBarsData = geojson.features.map(feature => ({
       id: feature.properties.id || feature.properties.osmId,
       osmId: feature.properties.osmId,
@@ -42,7 +28,6 @@ async function loadStaticBarsData(translations) {
       address: feature.properties.address || translations.step3.noAddress,
       website: feature.properties.website || null,
       phone: feature.properties.phone || null,
-      openingHours: feature.properties.opening_hours || null,
       amenity: feature.properties.amenity
     }));
     staticBarsLoaded = true;
@@ -116,8 +101,7 @@ async function searchBarsOverpass(center, radius, amenityTypes, translations, re
         lng: element.lon,
         address: element.tags?.['addr:street'] || translations.step3.noAddress,
         website: element.tags?.website || null,
-        phone: element.tags?.phone || null,
-        openingHours: element.tags?.opening_hours || null
+        phone: element.tags?.phone || null
       }));
     } catch (error) {
       if (error.name === 'AbortError' && attempt < retries) {

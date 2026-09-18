@@ -3,12 +3,11 @@ import { translations, t, getCurrentLang } from '../i18n.js';
 import { state } from './state.js';
 import { displayResults, clearResults } from './results.js';
 import { updateWorkflowButtons, goToStep } from './workflow.js';
-import { calculateCenter } from './scoring.js';
+import { calculateCenter, calculateBarScores } from './scoring.js';
 import { calculateMaxParticipantDistance } from './utils.js';
 import { searchBars } from './bar-search.js';
-import { calculateBarScores } from './scoring.js';
 
-export async function handleSearchBars(useFallback = false) {
+export async function handleSearchBars() {
   const resultsDiv = document.getElementById('results');
   const button = document.getElementById('searchBars');
   
