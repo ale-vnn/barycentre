@@ -1,15 +1,13 @@
 // Main application entry point
 import { updateI18n, initLanguageSelector, setLang, getCurrentLang, translations } from './i18n.js';
-import { state } from './src/state.js';
 import { initMap } from './src/map.js';
-import { addParticipant, removeParticipant, updateTransportModeUI, updateParticipantsList } from './src/participants.js';
+import { addParticipant, removeParticipant, updateParticipantsList } from './src/participants.js';
 import { showBarRoutes, openBarPopup } from './src/map.js';
 import { handleSearchBars } from './src/search.js';
 import { goToStep, updateWorkflowButtons } from './src/workflow.js';
-import { showToast, shareSession } from './src/ui.js';
+import { shareSession } from './src/ui.js';
 import { loadFromURL } from './src/session.js';
 import { initTheme } from './src/theme.js';
-import { clearResults } from './src/results.js';
 import { getCircleNumber } from './src/utils.js';
 
 function applyTranslations() {
@@ -116,17 +114,6 @@ function initParticipantForm() {
   });
 }
 
-function initTransportModeButtons() {
-  document.querySelectorAll('.mode-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      state.transportMode = e.target.dataset.mode;
-      clearResults();
-      updateTransportModeUI();
-      showToast(`${translations[getCurrentLang()].toast.modeChanged}${e.target.textContent}`);
-    });
-  });
-}
-
 function initWorkflowButtons() {
   document.getElementById('searchBars').addEventListener('click', handleSearchBars);
   
@@ -149,13 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initMap();
   initParticipantForm();
   initWorkflowButtons();
-  initTransportModeButtons();
   initTogglePanel();
   initInfoModal();
   initTheme();
   initLanguageSelector(switchLanguage);
   applyTranslations();
-  updateTransportModeUI();
   updateWorkflowButtons();
   
   // Expose functions to window for onclick handlers
